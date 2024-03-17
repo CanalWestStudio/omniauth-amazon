@@ -1,6 +1,4 @@
 require 'omniauth-oauth2'
-require 'multi_json'
-# require 'pry-rails'
 
 module OmniAuth
   module Strategies
