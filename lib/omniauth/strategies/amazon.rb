@@ -1,6 +1,6 @@
 require 'omniauth-oauth2'
 require 'multi_json'
-require 'pry-rails'
+# require 'pry-rails'
 
 module OmniAuth
   module Strategies
@@ -18,76 +18,48 @@ module OmniAuth
       }
 
       # option :authorize_params, {
-      #   :scope => 'profile postal_code'
+      #   :scope => 'profile postal_code',
+      #   :pkce => true
       # }
 
-      def authorize_params
-        {
-          applicationId: options[:application_id],
-          redirect_uri: callback_url,
-          state: options[:state],
-          scopea: 'profile postal_code',
+      # uid { raw_info['Profile']['CustomerId'] }
 
-        }
-      end
+      # def raw_info
+      #   binding.pry
+      #   # access_token.options[:parse] = :json
 
-      def token_params
-        {
-          redirect_uri: callback_url,
-          client_id: client.id,
-          client_secret: client.secret,
-          code: request.params['code'],
-          grant_type: 'authorization_code'
-        }
-      end
+      #   # This way is not working right now, do it the longer way
+      #   # for the time being
+      #   #
+      #   #@raw_info ||= access_token.get(url).parsed
+      #   options[:pkce] = true
+      #   url = "/ap/user/profile"
+      #   params = {:params => { :access_token => access_token.token}}
+      #   @raw_info ||= access_token.client.request(:get, url, params)
 
-      # def build_access_token
-      #   token_params = {
-      #     :redirect_uri => callback_url.split('?').first,
-      #     :client_id => client.id,
-      #     :client_secret => client.secret
-      #   }
-      #   verifier = request.params['code']
-      #   client.auth_code.get_token(verifier, token_params)
+
+      #   # https://api.amazon.com/user/profile?access_token=
+
+      #   # p = JSON.parse(access_token.get("https://api.amazon.com/user/profile").body)
       # end
 
+
       def build_access_token
-        # binding.pry
         verifier = request.params['code']
-        client.auth_code.get_token(verifier, token_params)
-      end
 
-      uid { raw_info['Profile']['CustomerId'] }
-
-      info do
-        {
-          'email' => raw_info['Profile']['PrimaryEmail'],
-          'name' => raw_info['Profile']['Name']
-        }
-      end
-
-      extra do
-        {
-          'postal_code' => raw_info['Profile']['PostalCode']
-        }
-      end
-
-      def raw_info
-        # binding.pry
-        access_token.options[:parse] = :json
-
-        # This way is not working right now, do it the longer way
-        # for the time being
-        #
-        #@raw_info ||= access_token.get('/ap/user/profile').parsed
-
-        url = "/users/auth/amazon"
-        params = {:params => { :access_token => access_token.token}}
-        @raw_info ||= access_token.client.request(:get, url, params).parsed
+        client.auth_code.get_token(
+          verifier,
+          { 
+            redirect_uri: callback_url 
+          }.merge(
+            token_params.to_hash(symbolize_keys: true)
+          ),
+          deep_symbolize(options.auth_token_params)
+        )
       end
 
       def callback_url
-        full_host + script_name + callback_path
+        options[:redirect_uri] || full_host + script_name + callback_path
       end
     end
   end
