@@ -1,7 +1,7 @@
 # OmniAuth::Amazon
 [![Build Status](https://travis-ci.org/wingrunr21/omniauth-amazon.png)](https://travis-ci.org/wingrunr21/omniauth-amazon) [![Gem Version](https://badge.fury.io/rb/omniauth-amazon.png)](http://badge.fury.io/rb/omniauth-amazon)
 
-[Login with Amazon](https://login.amazon.com/) OAuth2 strategy for OmniAuth 1.0
+[Login with Amazon Business](https://developer-docs.amazon.com/amazon-business/docs/website-authorization-workflow) OAuth2 strategy for OmniAuth 1.0
 
 ## Installation
 
@@ -19,13 +19,12 @@ Or install it yourself as:
 
 ## Prereqs
 
-You must create an application via the [Amazon App Console](https://login.amazon.com/manageApps). Once that is complete, register two URLs under <i>Web Settings -> Allowed Return URLs</i>:
+This gem is configured for use with Amazon Business [Onboarding Overview](https://developer-docs.amazon.com/amazon-business/docs/onboarding-overview).
 
-    http://localhost:3000/auth/amazon/callback
-    https://your_website_here/auth/amazon/callback
+    
+    https://your_website_here/users/auth/amazon/callback
 
-Amazon requires HTTPS for the whitelisted callback URL (except localhost). They don't appear to
-like ```.dev``` domains too much but happily accept localhost.
+Amazon requires HTTPS for the whitelisted callback URL.
 
 ## Usage
 
@@ -33,11 +32,21 @@ Usage is similar to other OAuth2 based OmniAuth strategies:
 
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :amazon, ENV['AMAZON_CLIENT_ID'], ENV['AMAZON_CLIENT_SECRET'],
-    {
-      :scope => 'profile postal_code' # default scope
-    }
+  config.omniauth provider, args[:public_key], args[:private_key], args[:options]
 end
+```
+
+Credentials require authorize_params option
+
+```yaml
+amazon:
+    public_key: ''
+    private_key: '' 
+    scope: 'profile' \\ check docs for your congirgurations
+    state: ''
+    authorize_params:
+      applicationId: '' \\ required
+      version: 'beta' \\ check app settings for your congirguration
 ```
 
 ## Configuration
@@ -54,9 +63,6 @@ Config options can be passed to `provider` via a `Hash`:
 * [Login with Amazon button guide](https://login.amazon.com/button-guide)
 * [Login with Amazon style guide](https://login.amazon.com/style-guide)
 
-## Todo
-1. Fix ```raw_info``` to see why ```client.request``` has to be used in query
-   mode
 
 ## Contributing
 
@@ -65,6 +71,3 @@ Config options can be passed to `provider` via a `Hash`:
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/wingrunr21/omniauth-amazon/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
