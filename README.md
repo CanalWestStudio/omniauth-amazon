@@ -40,13 +40,13 @@ Credentials require authorize_params option
 
 ```yaml
 amazon:
-    public_key: ''
-    private_key: '' 
-    scope: 'profile' \\ check docs for your congirgurations
-    state: ''
-    authorize_params:
-      applicationId: '' \\ required
-      version: 'beta' \\ check app settings for your congirguration
+  public_key: ''
+  private_key: '' 
+  scope: 'profile' \\ check docs for your congirgurations
+  state: ''
+  authorize_params:
+    applicationId: '' \\ required
+    version: 'beta' \\ check app settings for your congirguration
 ```
 
 ## Configuration
@@ -60,8 +60,7 @@ Config options can be passed to `provider` via a `Hash`:
       screen the first time the user logs in.
 
 ## Resources
-* [Login with Amazon button guide](https://login.amazon.com/button-guide)
-* [Login with Amazon style guide](https://login.amazon.com/style-guide)
+* [Amazon Business Docs](https://developer-docs.amazon.com/amazon-business/docs)
 
 
 ## Contributing
